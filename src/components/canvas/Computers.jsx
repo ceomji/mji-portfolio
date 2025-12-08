@@ -5,7 +5,7 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader";
 import CanvasLoader from "../Loader";
 
 const ComputerModel = ({ isMobile }) => {
-  const { scene } = useGLTF(
+  const { scene, error } = useGLTF(
     "./desktop_pc/scene.gltf",
     undefined,
     (loader) => {
@@ -13,6 +13,11 @@ const ComputerModel = ({ isMobile }) => {
       loader.setDRACOLoader(dracoLoader);
     }
   );
+
+  if (error) {
+    console.error("Error loading computer model:", error);
+    return null;
+  }
 
   return (
     <mesh>
@@ -60,7 +65,7 @@ const ComputersCanvas = () => {
 
   return (
     <Canvas
-      frameloop="demand"
+      frameloop="always"
       shadows
       dpr={[1, 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
