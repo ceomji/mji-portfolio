@@ -15,6 +15,8 @@ const ComputerModel = ({ isMobile }) => {
   );
 
   if (error) {
+    console.log('Error loading computer model:', error);
+    alert("Failed to load 3D model. Please try again later.", error);
     console.error("Error loading computer model:", error);
     return null;
   }
