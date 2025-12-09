@@ -27,10 +27,11 @@ const ComputerModel = ({ isMobile }) => {
   }
   
   if (!scene) {
+    alert('Model scene is null or undefined');
     console.warn('Model scene is null or undefined');
     return null;
   }
-  
+  alert('Computer model loaded')
   console.log('Computer model loaded successfully');
 
   return (
