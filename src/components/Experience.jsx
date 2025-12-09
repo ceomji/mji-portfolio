@@ -3,7 +3,6 @@ import {
   VerticalTimelineElement,
 } from "react-vertical-timeline-component";
 import { motion } from "framer-motion";
-import { ComputersCanvas } from "./canvas";
 
 import "react-vertical-timeline-component/style.min.css";
 
@@ -60,9 +59,6 @@ const Experience = () => (
       <h2 className={`${styles.sectionHeadText} text-center`}>Work Experience</h2>
     </motion.div>
     <div className="mt-20 flex flex-col">
-      <div className="absolute inset-0 w-full h-full" style={{ isolation: 'isolate' }}>
-        <ComputersCanvas />
-      </div>
       <VerticalTimeline>
         {experiences.map((experience, index) => (
           <ExperienceCard key={`experience-${index}`} experience={experience} />
