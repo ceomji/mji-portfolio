@@ -5,21 +5,33 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader";
 import CanvasLoader from "../Loader";
 
 const ComputerModel = ({ isMobile }) => {
+  const base = import.meta.env.BASE_URL || '/';
+  const modelPath = base.endsWith('/') ? `${base}desktop_pc/scene.gltf` : `${base}/desktop_pc/scene.gltf`;
+  
+  console.log('Attempting to load model from:', modelPath);
+  
   const { scene, error } = useGLTF(
-    "./desktop_pc/scene.gltf",
+    modelPath,
     undefined,
     (loader) => {
       const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
       loader.setDRACOLoader(dracoLoader);
     }
   );
 
   if (error) {
-    console.log('Error loading computer model:', error);
-    alert("Failed to load 3D model. Please try again later.", error);
     console.error("Error loading computer model:", error);
+    console.log('Model path attempted:', modelPath);
     return null;
   }
+  
+  if (!scene) {
+    console.warn('Model scene is null or undefined');
+    return null;
+  }
+  
+  console.log('Computer model loaded successfully');
 
   return (
     <primitive
@@ -35,6 +47,8 @@ const MemoizedComputerModel = React.memo(ComputerModel);
 
 const ComputersCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
+  
+  console.log('ComputersCanvas rendering, base URL:', import.meta.env.BASE_URL);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 500px)");

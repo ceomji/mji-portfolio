@@ -5,11 +5,15 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader";
 import CanvasLoader from "../Loader";
 
 const EarthModel = () => {
+  const base = import.meta.env.BASE_URL || '/';
+  const modelPath = base.endsWith('/') ? `${base}planet/scene.gltf` : `${base}/planet/scene.gltf`;
+  
   const { scene } = useGLTF(
-    "./planet/scene.gltf",
+    modelPath,
     undefined,
     (loader) => {
       const dracoLoader = new DRACOLoader();
+      dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
       loader.setDRACOLoader(dracoLoader);
     }
   );
