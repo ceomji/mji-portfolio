@@ -10,9 +10,10 @@ const ComputerModel = ({ isMobile }) => {
   
   console.log('Attempting to load model from:', modelPath);
   
-  const { scene, error } = useGLTF(
+  const gltf = useGLTF(
     modelPath,
-    undefined,
+    true,
+    true,
     (loader) => {
       const dracoLoader = new DRACOLoader();
       dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
@@ -20,31 +21,22 @@ const ComputerModel = ({ isMobile }) => {
     }
   );
 
-  if (error) {
-    console.error("Error loading computer model:", error);
-    console.log('Model path attempted:', modelPath);
-    return null;
-  }
-  
-  if (!scene) {
-    alert('Model scene is null or undefined');
+  if (!gltf || !gltf.scene) {
     console.warn('Model scene is null or undefined');
     return null;
   }
-  alert('Computer model loaded')
-  console.log('Computer model loaded successfully');
+  
+  console.log('Computer model loaded successfully', gltf.scene);
 
   return (
     <primitive
-      object={scene}
+      object={gltf.scene}
       scale={isMobile ? 0.7 : 0.75}
       position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
       rotation={[-0.01, -0.2, -0.1]}
     />
   );
 };
-
-const MemoizedComputerModel = React.memo(ComputerModel);
 
 const ComputersCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
@@ -70,7 +62,6 @@ const ComputersCanvas = () => {
 
   return (
     <Canvas
-      frameloop="demand"
       shadows={false}
       dpr={[1, isMobile ? 1 : 2]}
       camera={{ position: [20, 3, 5], fov: 25 }}
@@ -108,7 +99,7 @@ const ComputersCanvas = () => {
           maxPolarAngle={Math.PI / 2}
           minPolarAngle={Math.PI / 2}
         />
-        <MemoizedComputerModel isMobile={isMobile} />
+        <ComputerModel isMobile={isMobile} />
       </Suspense>
       <Preload all />
     </Canvas>
