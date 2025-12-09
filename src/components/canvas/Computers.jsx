@@ -77,7 +77,7 @@ const ComputersCanvas = () => {
       gl={{ 
         preserveDrawingBuffer: true,
         antialias: !isMobile,
-        alpha: true,
+        alpha: false,
         powerPreference: isMobile ? "default" : "high-performance",
         stencil: false,
         depth: true
@@ -89,19 +89,20 @@ const ComputersCanvas = () => {
         width: '100%',
         height: '100%',
         zIndex: 0,
-        pointerEvents: 'auto'
+        pointerEvents: 'auto',
+        background: 'transparent'
       }}
     >
       <Suspense fallback={<CanvasLoader />}>
-        {/* <hemisphereLight intensity={0.15} groundColor="black" />
+        <hemisphereLight intensity={0.15} groundColor="black" skyColor="white" />
         <spotLight
           position={[-20, 50, 10]}
           angle={0.12}
           penumbra={1}
-          intensity={1}
+          intensity={1.5}
           castShadow={false}
         />
-        <pointLight intensity={1} /> */}
+        <pointLight intensity={1} />
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
