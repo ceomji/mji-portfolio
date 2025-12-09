@@ -77,7 +77,7 @@ const ComputersCanvas = () => {
       gl={{ 
         preserveDrawingBuffer: true,
         antialias: !isMobile,
-        alpha: false,
+        alpha: true,
         powerPreference: isMobile ? "default" : "high-performance",
         stencil: false,
         depth: true
