@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
-import { DRACOLoader } from "three/addons/loaders/DRACOLoader";
 import CanvasLoader from "../Loader";
 
 const ComputerModel = ({ isMobile }) => {
@@ -10,16 +9,7 @@ const ComputerModel = ({ isMobile }) => {
   
   console.log('Attempting to load model from:', modelPath);
   
-  const gltf = useGLTF(
-    modelPath,
-    true,
-    true,
-    (loader) => {
-      const dracoLoader = new DRACOLoader();
-      dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-      loader.setDRACOLoader(dracoLoader);
-    }
-  );
+  const gltf = useGLTF(modelPath);
 
   if (!gltf || !gltf.scene) {
     console.warn('Model scene is null or undefined');
@@ -63,13 +53,13 @@ const ComputersCanvas = () => {
   return (
     <Canvas
       shadows={false}
-      dpr={[1, isMobile ? 1 : 2]}
+      dpr={[1, 1]}
       camera={{ position: [20, 3, 5], fov: 25 }}
       gl={{ 
-        preserveDrawingBuffer: true,
-        antialias: !isMobile,
+        preserveDrawingBuffer: false,
+        antialias: false,
         alpha: true,
-        powerPreference: isMobile ? "default" : "high-performance",
+        powerPreference: "default",
         stencil: false,
         depth: true
       }}
@@ -93,7 +83,6 @@ const ComputersCanvas = () => {
           intensity={1.5}
           castShadow={false}
         />
-        <pointLight intensity={1} />
         <OrbitControls
           enableZoom={false}
           maxPolarAngle={Math.PI / 2}
