@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useState, Component } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Preload, useGLTF } from "@react-three/drei";
-import { DRACOLoader } from "three/addons/loaders/DRACOLoader";
 import CanvasLoader from "../Loader";
 
 // Simple Error Boundary component
@@ -21,21 +20,17 @@ class CanvasErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
+      // Return transparent container when Canvas crashes
       return (
         <div style={{
           position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          textAlign: 'center',
-          color: '#915EFF',
-          padding: '20px'
-        }}>
-          <p>Unable to load 3D model</p>
-          <p style={{ fontSize: '12px', marginTop: '10px' }}>
-            Your device may not support this feature
-          </p>
-        </div>
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'transparent',
+          zIndex: 0
+        }} />
       );
     }
 
@@ -43,23 +38,18 @@ class CanvasErrorBoundary extends Component {
   }
 }
 
-// Fallback component when 3D model fails to load
-const ModelErrorFallback = () => {
+// Transparent fallback when model fails to load or is loading
+const TransparentFallback = () => {
   return (
     <div style={{
       position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      textAlign: 'center',
-      color: '#915EFF',
-      padding: '20px'
-    }}>
-      <p>Unable to load 3D model</p>
-      <p style={{ fontSize: '12px', marginTop: '10px' }}>
-        Your device may not support this feature
-      </p>
-    </div>
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: 'transparent',
+      zIndex: 0
+    }} />
   );
 };
 
@@ -67,30 +57,17 @@ const ComputerModel = ({ isMobile }) => {
   const base = import.meta.env.BASE_URL || '/';
   const modelPath = base.endsWith('/') ? `${base}desktop_pc/scene.gltf` : `${base}/desktop_pc/scene.gltf`;
   
-  console.log('Attempting to load model from:', modelPath);
-  
-  // Fix: Correct useGLTF API usage with proper DRACO loader setup
-  const gltf = useGLTF(
-    modelPath,
-    undefined,
-    (loader) => {
-      const dracoLoader = new DRACOLoader();
-      dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
-      dracoLoader.preload();
-      loader.setDRACOLoader(dracoLoader);
-    }
-  );
+  // @react-three/drei 9.122+ handles DRACO decompression automatically
+  const { scene } = useGLTF(modelPath);
 
-  if (!gltf || !gltf.scene) {
-    console.warn('Model scene is null or undefined');
+  if (!scene) {
+    console.warn('Computer model scene is null');
     return null;
   }
-  
-  console.log('Computer model loaded successfully', gltf.scene);
 
   return (
     <primitive
-      object={gltf.scene}
+      object={scene}
       scale={isMobile ? 0.7 : 0.75}
       position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
       rotation={[-0.01, -0.2, -0.1]}
@@ -101,8 +78,6 @@ const ComputerModel = ({ isMobile }) => {
 const ComputersCanvas = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isAndroid, setIsAndroid] = useState(false);
-  
-  console.log('ComputersCanvas rendering, base URL:', import.meta.env.BASE_URL);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 500px)");
@@ -140,6 +115,7 @@ const ComputersCanvas = () => {
           preserveDrawingBuffer: true,
           antialias: !isLowPowerDevice,
           alpha: true,
+          premultipliedAlpha: true,
           powerPreference: isLowPowerDevice ? "low-power" : "high-performance",
           stencil: false,
           depth: true,
@@ -155,11 +131,14 @@ const ComputersCanvas = () => {
           pointerEvents: 'auto',
           background: 'transparent'
         }}
-        onCreated={({ gl }) => {
+        onCreated={({ gl, scene }) => {
           // Additional memory optimizations for mobile
           if (isLowPowerDevice) {
             gl.setPixelRatio(Math.min(window.devicePixelRatio, 1));
           }
+          // Explicitly set transparent background for Android Chrome
+          gl.setClearColor(0x000000, 0);
+          scene.background = null;
         }}
       >
         <Suspense fallback={<CanvasLoader />}>
