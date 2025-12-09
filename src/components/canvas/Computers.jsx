@@ -142,15 +142,16 @@ const ComputersCanvas = () => {
         }}
       >
         <Suspense fallback={<CanvasLoader />}>
-          <hemisphereLight intensity={isLowPowerDevice ? 0.1 : 0.15} groundColor="black" skyColor="white" />
+          <ambientLight intensity={0.5} />
+          <hemisphereLight intensity={isLowPowerDevice ? 0.35 : 0.5} groundColor="black" skyColor="white" />
           <spotLight
             position={[-20, 50, 10]}
             angle={0.12}
             penumbra={1}
-            intensity={isLowPowerDevice ? 1 : 1.5}
+            intensity={isLowPowerDevice ? 1.5 : 2}
             castShadow={false}
           />
-          <pointLight intensity={isLowPowerDevice ? 0.7 : 1} />
+          <pointLight intensity={isLowPowerDevice ? 1 : 1.5} position={[10, 10, 10]} />
           <OrbitControls
             enableZoom={false}
             maxPolarAngle={Math.PI / 2}
