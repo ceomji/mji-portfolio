@@ -71,6 +71,7 @@ export const experiences = [
     points: [
       "Handled Multiple Projects involving the development of new projects like Advanced Queuing System, Delivery Tracking Mobile App, and a Loyalty App",
       "Collaborated with some developers to work on some of the company's R&D projects where we develop proof of concepts for new technologies and frameworks",
+      "Initiated the development of a custom queuing system for a private, loan association, encompassing the CMS, Teller App, Kiosk, and Monitor App. Implemented in a monorepo structure using Turborepo for efficient management and scalability.",
     ],
   },
   {
